@@ -164,6 +164,15 @@ main{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--bord
 .paper-conditions{
   display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;
 }
+.ph-relevance{
+  font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.5; border-radius:2px;
+  padding:8px 10px; margin-bottom:10px;
+}
+.ph-relevance.in-range{background:rgba(122,155,92,0.1); color:var(--good); border:1px solid var(--good);}
+.ph-relevance.outside{background:rgba(184,92,59,0.1); color:var(--warn); border:1px solid var(--warn);}
+.ph-relevance.far-outside{background:rgba(194,78,78,0.12); color:var(--conflict); border:1px solid var(--conflict);}
+.paper-card.ph-mismatch{opacity:0.72;}
+.paper-card.ph-mismatch .paper-outcome-tag{filter:grayscale(0.4);}
 .cond-chip{
   font-family:'JetBrains Mono',monospace; font-size:10.5px; background:var(--panel-2);
   border:1px solid var(--border-bright); border-radius:2px; padding:4px 8px; color:var(--text-mid);
@@ -508,6 +517,115 @@ const PAPERS = [
     mechanism: "Recovery ceiling not explained by electrostatics/HSAB alone.",
     divergenceNote: "This paper actually tests a different collector (CTAB) than fatty_acid/oleate \u2014 included here as context for the recovery-ceiling caveat, not as direct fatty_acid evidence. Flagged for review: may need its own collector entry rather than living under fatty_acid."
   },
+  {
+    id: "gib-hyd-04", mineral: "gibbsite", collector: "hydroxamate", verified: false,
+    outcome: "positive",
+    title: "Roles of the Hydrophobic and Hydrophilic Groups of Collectors in the Flotation of Different-Sized Mineral Particles",
+    authors: "Liu, Mingxia et al.", year: 2022, source: "Colloids and Surfaces A: Physicochemical and Engineering Aspects (via Consensus)",
+    url: "https://consensus.app/papers/details/f9dbe6e154dd5f2f81da0b520eefe923/",
+    testedPH: null, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: { value: 64, unit: "\u00b5m (coarse) / 16 \u00b5m (fine)", range: null },
+    reportedResult: "Tested on niobium oxide (pyrochlore), not gibbsite directly \u2014 included as the best available particle-size evidence for hydroxamate-class collectors specifically. Octyl and oleoyl hydroxamic acid showed strong collecting ability at BOTH 64 \u00b5m and 16 \u00b5m particle sizes, unlike carboxylate collectors (sodium oleate, sodium octanoate) which dropped sharply at fine (16 \u00b5m) sizes.",
+    mechanism: "Chemisorption via the hydroxamate head group (confirmed by FTIR) maintains strong adsorption affinity regardless of particle size, because fine-particle flotation depends more on head-group mineral affinity than on hydrocarbon chain length \u2014 this is the literature basis for hydroxamate being comparatively particle-size-tolerant versus fatty acid collectors.",
+    divergenceNote: "Different mineral system (niobium oxide, not gibbsite) \u2014 the underlying collector-class chemistry (hydroxamate chemisorption mechanism) is the same, but this should be read as supporting evidence, not a gibbsite-specific finding, until a gibbsite-specific particle-size study is found."
+  },
+
+  // ---------------- GIBBSITE | AMINE ----------------
+  // New pair added from a deeper literature pass. Important framing:
+  // in all three papers below, amine is used for REVERSE flotation \u2014
+  // it collects the SILICA/silicate gangue, not gibbsite itself.
+  // Gibbsite is the mineral left behind (like kaolinite+hydroxamate's
+  // avoidance pattern, but the other way round: here it's the VALUABLE
+  // mineral that amine does NOT collect). This matters for how the
+  // Theory panel's HSAB/PZC prediction should be read for this pair.
+  {
+    id: "gib-am-01", mineral: "gibbsite", collector: "amine", verified: false,
+    outcome: "selective-avoidance",
+    title: "Separation of silica from bauxite via froth flotation",
+    authors: "Massola, Camila Peres et al.", year: 2009, source: "Minerals Engineering (via Consensus)",
+    url: null,
+    testedPH: 10.0, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: null,
+    reportedResult: "Reverse froth flotation using ether-amine as cationic collector and starch as depressant, pH ~10.0, pilot-plant scale. Amine collects quartz/silica, leaving gibbsite (plus iron/titanium minerals) in the non-floated concentrate: 42.3% available alumina, alumina/insoluble-silica ratio 11.1, improved to 12.6 after magnetic separation, 69.3% overall alumina recovery in the final concentrate.",
+    mechanism: "Amine's electrostatic mechanism targets quartz's strongly negative surface (PZC ~2.0, far more negative than gibbsite's PZC ~9.0 across this pH range) \u2014 gibbsite is comparatively far less attractive to a cationic collector at pH 10, so it is selectively left behind rather than actively repelled.",
+    divergenceNote: null
+  },
+  {
+    id: "gib-am-02", mineral: "gibbsite", collector: "amine", verified: false,
+    outcome: "selective-avoidance",
+    title: "Removal of silicates from gibbsite-bauxite ore by using cationic reverse flotation",
+    authors: "Palit, Christin & Suliestyah", year: 2021, source: "AIP Conference Proceedings (via web search, AIP Publishing)",
+    url: "https://pubs.aip.org/aip/acp/article-abstract/2363/1/030010/962647",
+    testedPH: null, testedPHRange: [4, 10],
+    testedDose: { value: 400, unit: "g/t (DDA)", range: [400, 500], singleSource: false },
+    testedParticleSize: { value: null, unit: "-325 mesh (finer fraction favorable)", range: null },
+    reportedResult: "Dodecylamine (DDA) and AERO 3000C tested as collectors, starch as depressant. Optimum pH range 4\u201310 for silica removal. DDA outperformed AERO 3000C (61.4% vs lower Al\u2082O\u2083 content). Best result: 400 g/t DDA + 400 g/t depressant, pH 10, -325 mesh particle size \u2192 alumina increased to 79.1%, silica decreased to 8.89%. Without depressant, Al\u2082O\u2083 was even higher (66.8%) but with less silica control (23.5% SiO\u2082).",
+    mechanism: "Same reverse-flotation mechanism as gib-am-01 \u2014 amine collects silicate gangue via electrostatic attraction, gibbsite is left in the non-floated (sink) fraction.",
+    divergenceNote: "This paper's dosage figures (400\u2013500 g/t DDA) are the first real gibbsite-system amine dosage numbers found so far \u2014 useful for the collector dose slider on this pair even though the collection target is silica, not gibbsite."
+  },
+  {
+    id: "gib-am-03", mineral: "gibbsite", collector: "amine", verified: false,
+    outcome: "selective-avoidance",
+    title: "Research on Low-grade Bauxite Desilication by Reverse Flotation",
+    authors: "Dan, F.", year: 2012, source: "Nonferrous Metals (via Consensus)",
+    url: null,
+    testedPH: 4, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: { value: null, unit: "70% below 74 \u00b5m (grinding fineness)", range: null },
+    reportedResult: "Gibbsite-dominant bauxite ore from Yunnan, China. Amine collector \"Wj-13\" (selected as best of 16 tested amine collectors) at pH 4, with sodium carbonate and sodium hexametaphosphate as regulators, achieved 60.12% Al\u2082O\u2083 concentrate at 90.48% recovery (relative to the flotation operation), A/S ratio 8.89.",
+    mechanism: "Same reverse-flotation mechanism \u2014 note this paper's optimum pH (4, acidic) is notably different from gib-am-01/02's pH ~10 optimum, both for silica-collecting reverse flotation. This is a real, currently unexplained divergence \u2014 possibly different ore mineralogy (Yunnan gibbsite vs. other sources) or different amine collector chemistry (Wj-13 vs. DDA/ether-amine) driving different optimal pH.",
+    divergenceNote: "Genuinely conflicts with gib-am-01 (pH ~10) and gib-am-02 (pH 4\u201310, best result at pH 10) on optimum pH \u2014 this paper's best result is specifically at pH 4. Flagged as an open disagreement across papers, not resolved here; may reflect ore-specific or collector-specific differences not captured by treating \"amine\" as one uniform category."
+  },
+
+  // ---------------- BOEHMITE | AMINE ----------------
+  // New mineral coverage, previously zero papers for boehmite at all.
+  {
+    id: "boe-am-01", mineral: "boehmite", collector: "amine", verified: false,
+    outcome: "positive",
+    title: "Characterization and flotation of low-grade boehmitic bauxite ore from Seydi\u015fehir (Konya, Turkey)",
+    authors: "Birinci, Mustafa et al.", year: 2021, source: "Minerals Engineering (via Consensus)",
+    url: "https://consensus.app/papers/details/b822736812bf5d309587856d00b5f636/",
+    testedPH: null, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: null,
+    reportedResult: "Reverse flotation (amine collects silica/clay gangue) of boehmitic bauxite ore (57.33% Al\u2082O\u2083, 9.01% SiO\u2082, A/S 6.36) achieved a high-grade concentrate with A/S ratio 8.54, but Al\u2082O\u2083 recovery was low at only 42.87%. The ore's complex mineralogy \u2014 boehmite interlocked with kaolinite, illite, hematite, goethite, rutile, and ilmenite \u2014 and poor mineral liberation were identified as the main reasons recovery stayed low even though the A/S grade target was met.",
+    mechanism: "Same reverse-flotation electrostatic mechanism as gibbsite+amine (amine collects negatively-charged silicate gangue, boehmite is left behind) \u2014 but this paper's low recovery highlights that liberation/mineralogy complexity can dominate over collector chemistry, a limitation this tool's model doesn't represent at all.",
+    divergenceNote: "This paper doesn't report a specific pH, which limits how useful it is for pH-based grading on this pair \u2014 flagged as a gap for follow-up. The low recovery despite good A/S grade is a useful real-world caveat: good surface chemistry (successful gangue removal) doesn't guarantee good process recovery when liberation is poor."
+  },
+
+  // ---------------- BOEHMITE | FATTY_ACID ----------------
+  {
+    id: "boe-fa-01", mineral: "boehmite", collector: "fatty_acid", verified: false,
+    outcome: "positive",
+    title: "Froth Flotation for Boehmite Recovery from a Water-Treatment Process Using Electrocoagulation",
+    authors: "Guzm\u00e1n-Jarqu\u00edn, Elvin J. et al.", year: 2025, source: "Metals (via Consensus)",
+    url: "https://consensus.app/papers/details/6b548ac769fa58c6a9290ceeea16a78d/",
+    testedPH: null, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: { value: 30, unit: "\u00b5m (particles below this size recovered best)", range: null },
+    reportedResult: "DIRECT flotation of synthetic boehmite (not from bauxite ore \u2014 from water-treatment electrocoagulation flocs) using anionic collectors sodium dodecyl sulfate (SDS) and potassium oleate (PO). SDS at increased concentration enabled recovery of up to 95% of boehmite particles under 30 \u00b5m diameter, using microbubble flotation.",
+    mechanism: "Anionic collector (sulfate/oleate head group) direct chemisorption/electrostatic attraction to boehmite's Al-OH surface \u2014 consistent with the same hard-hard HSAB match this tool's theory engine already predicts for fatty_acid \u00d7 boehmite, and the first real evidence confirming it.",
+    divergenceNote: "This is synthetic boehmite from a water-treatment context, not natural boehmitic bauxite ore \u2014 the surface chemistry principle likely transfers, but recovery numbers (95%) may not be representative of a real bauxite ore's mixed mineralogy and gangue interference, per the caveat in boe-am-01."
+  },
+
+  // ---------------- HEMATITE | FATTY_ACID ----------------
+  // New mineral coverage, previously zero papers for hematite at all.
+  {
+    id: "hem-fa-01", mineral: "hematite", collector: "fatty_acid", verified: false,
+    outcome: "positive",
+    title: "Flotation of hematite using 18-carbon fatty acids",
+    authors: "Quast, K.", year: 2020, source: "Minerals Engineering (via Consensus)",
+    url: "https://consensus.app/papers/details/5813cde8c030591b84d22aba99bc7e28/",
+    testedPH: null, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: null,
+    reportedResult: "Commercial mixtures of 18-carbon fatty acids (oleic-acid-class) tested as flotation reagents for hematite across a wide pH range. Chemisorption identified as the dominant adsorption mechanism in the ALKALINE pH range; physical (electrostatic) adsorption may contribute in the ACIDIC region instead \u2014 i.e. the bonding mechanism itself changes character depending on pH, not just the strength of one fixed mechanism. High mineral recoveries were achieved overall; unsaturated fatty acids (more double bonds) showed higher collecting power but also greater hydrophilic character and oxidation susceptibility.",
+    mechanism: "Two distinct mechanisms operating in different pH zones \u2014 chemisorption (alkaline) vs. electrostatic physisorption (acidic) \u2014 which the current bondForSurface() logic doesn't represent; it picks one mechanism per collector globally (via collector.mechanism), not one that can shift with pH for the same collector-mineral pair.",
+    mechanismSwitch: { type: "chemisorption-to-electrostatic", direction: "alkaline chemisorption, acidic electrostatic", crossoverPH: null },
+    divergenceNote: "This finding (mechanism TYPE changing with pH, not just strength) is a real gap in this tool's theory engine, worth flagging for a future fix \u2014 currently no mineral+collector pair in the model can express 'chemisorption at high pH, physisorption at low pH' as a single pair's behavior."
+  },
 
   // ---------------- KAOLINITE | HYDROXAMATE ----------------
   {
@@ -551,20 +669,62 @@ const PAPERS = [
     mechanism: "Electrostatic attraction \u2014 kaolinite's permanently negative basal face attracts cationic collector across a wide pH range regardless of PZC-style pH-dependence.",
     divergenceNote: "Recovery here (up to 80%) is much higher than kaolinite+hydroxamate's near-zero industrial uptake \u2014 consistent with amine's electrostatic mechanism actually matching kaolinite's dominant (permanently charged basal) surface, unlike hydroxamate's chelation mechanism which needs accessible edge Al-OH sites."
   },
+  {
+    id: "kao-am-02", mineral: "kaolinite", collector: "amine", verified: false,
+    outcome: "positive",
+    title: "Recovery of kaolinite from tailings of Zonouz kaolin-washing plant by flotation-flocculation method",
+    authors: "Barani, K. et al.", year: 2017, source: "Journal of Materials Research and Technology (via Consensus)",
+    url: "https://consensus.app/papers/details/89b64c94e6975cd5860139e4ff3b78e0/",
+    testedPH: 7, testedPHRange: null,
+    testedDose: { value: 300, unit: "g/t", range: null, singleSource: true },
+    testedParticleSize: null,
+    reportedResult: "300 g/t dodecylamine + 500 g/t aluminum chloride + 50 g/t pine oil (frother) + 15 g/t polyacrylamide (flocculant) at pH 7 achieved 34.43% mass recovery with 37.19% Al\u2082O\u2083 in concentrate. Notably, this paper states flotation of kaolinite works BETTER in acidic than alkaline conditions with cationic collectors, though acidic operation causes equipment corrosion at industrial scale \u2014 flocculant addition was used specifically to make near-neutral pH (7) practical instead.",
+    mechanism: "Electrostatic attraction, same as kao-am-01, but this paper is the first on file with an actual gram-per-tonne dosage figure for kaolinite+amine \u2014 previously this pair had no dosage data at all.",
+    divergenceNote: "This is a multi-reagent system (collector + activator + frother + flocculant together), not amine alone \u2014 the 300 g/t figure should be read as \"amine dose in a real industrial recipe,\" not an isolated single-reagent optimum."
+  },
+
+  // ---------------- DIASPORE | HYDROXAMATE ----------------
+  // New pair, previously zero coverage.
+  {
+    id: "dia-hyd-01", mineral: "diaspore", collector: "hydroxamate", verified: false,
+    outcome: "positive",
+    title: "Tailored pH-triggered surfactant for stepwise separation of a three-component mineral system",
+    authors: "Sun, Qing et al.", year: 2023, source: "Separation and Purification Technology (via Consensus)",
+    url: "https://consensus.app/papers/details/5475732b7d7a54c8832b7032bc1ec12d/",
+    testedPH: 8.0, testedPHRange: [6, 8],
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: null,
+    reportedResult: "A custom pH-switchable surfactant (BTHA) with both thioether and hydroxamate functional groups was used for stepwise separation of pyrite, diaspore, and kaolinite from high-sulfur bauxite. At pH 6.0, the hydroxamate group is deactivated (thioether-only mode) and pyrite floats selectively (85.9% recovery). Raising pH to 8.0 activates the hydroxamate group, which then chelates tightly with diaspore, separating it from kaolinite.",
+    mechanism: "pH directly gates whether the hydroxamate functional group is chemically active at all in this custom surfactant \u2014 a much sharper pH-dependence than typically assumed for hydroxamate collectors, since here it's not just adsorption strength varying with pH but the functional group's reactivity itself switching on/off.",
+    divergenceNote: "This is a specialty bifunctional surfactant (BTHA), not the generic \"hydroxamate\" class the rest of this tool models \u2014 the sharp pH 6\u21928 on/off switching may be specific to this molecule's thioether-hydroxamate design, not necessarily representative of standard alkyl hydroxamates. Still useful as the first diaspore+hydroxamate evidence on file, but flagged as possibly not generalizable."
+  },
 
   // ---------------- DIASPORE | AMINE ----------------
   {
+    id: "dia-am-02", mineral: "diaspore", collector: "amine", verified: false,
+    outcome: "negative",
+    title: "Effects of particle size on flotation parameters in the separation of diaspore and kaolinite",
+    authors: "Zhang, Ningning et al.", year: 2017, source: "Powder Technology (via Consensus)",
+    url: "https://consensus.app/papers/details/b8765e2786855c3da708a976b013439c/",
+    testedPH: 10, testedPHRange: null,
+    testedDose: { value: null, unit: null, range: null, singleSource: false },
+    testedParticleSize: { value: 29, unit: "\u00b5m (favorable range \u221238+20\u00b5m for DIRECT flotation with sodium oleate, not amine)", range: [20, 38] },
+    reportedResult: "IMPORTANT: this paper's strong result (83.79% diaspore recovery, A/S ratio 7.96, particle size \u221238+20\u00b5m) is from DIRECT flotation using sodium oleate (a fatty_acid, not amine) \u2014 that data point belongs under diaspore+fatty_acid, not here. Separately, this paper's REVERSE flotation system (amine collecting kaolinite, diaspore depressed) reports favorable size fractions of \u221274+54\u00b5m and \u221210\u00b5m for that reverse system \u2014 again, amine's target there is kaolinite, not diaspore.",
+    mechanism: "No part of this paper reports amine directly collecting diaspore. The particle-size effect itself (favorable vs adverse fractions) is real and paper-backed, but tied to the wrong mineral+collector pair as originally filed.",
+    divergenceNote: "CORRECTED entry: originally filed as \"positive\" diaspore+amine evidence, which mixed up two different collector systems in the same paper (oleate for diaspore, amine for kaolinite). Kept on file under diaspore+amine as a negative/non-applicable flag rather than deleted, so this mismapping is visible rather than silently disappearing. The particle-size data (favorable \u221238+20\u00b5m / \u221254+38\u00b5m fractions, 83.79% recovery) is genuinely useful but belongs under a diaspore+fatty_acid entry \u2014 flagged as a follow-up fix, not yet created."
+  },
+  {
     id: "dia-am-01", mineral: "diaspore", collector: "amine", verified: true,
-    outcome: "positive",
+    outcome: "negative",
     title: "SHMP-diaspore P-O-Al bonding study",
     authors: null, year: 2005, source: "J. Cent. South Univ. Technol.",
     url: "https://link.springer.com/article/10.1007/s11771-005-0175-x",
     testedPH: 6.0, testedPHRange: [5.5, 8.5],
     testedDose: { value: null, unit: null, range: null, singleSource: false },
     testedParticleSize: null,
-    reportedResult: "Reverse flotation of kaolinite (using amine) from diaspore-bearing ore effective in pH 5.5\u20138.5 window; SHMP depressant adsorption onto diaspore peaks near pH 6.0.",
-    mechanism: "Amine collects kaolinite (via electrostatic attraction to its permanently negative basal face) while SHMP selectively depresses diaspore via P-O-Al surface complexation \u2014 this is the depressant pair note's source too.",
-    divergenceNote: null
+    reportedResult: "This paper's system is REVERSE flotation: amine collects KAOLINITE (not diaspore), while SHMP selectively depresses diaspore via P-O-Al surface complexation. Diaspore is the mineral left behind, not the one collected by amine \u2014 so for the diaspore+amine pair specifically, this paper's finding is that amine does NOT collect diaspore well (consistent with diaspore's PZC of 7.3 making its surface positive, repelling the cationic amine, at the pH 5.5\u20138.5 window this system operates in).",
+    mechanism: "Diaspore's positively-charged surface (pH < PZC 7.3) electrostatically repels cationic amine \u2014 amine's real target in this system is kaolinite's permanently negative basal face, not diaspore.",
+    divergenceNote: "CORRECTED entry: originally filed as \"positive\" evidence for diaspore+amine, which was a data-modeling error \u2014 the paper is actually about amine collecting kaolinite while depressing diaspore, so it's negative evidence for diaspore+amine specifically. Left on file under diaspore+amine (rather than moved to kaolinite+amine) because the SHMP-diaspore depressant mechanism is still the primary reason this paper is useful here; a proper kaolinite+amine entry citing this same paper for the collection side would be a reasonable follow-up."
   },
 
   // ---------------- CHALCOPYRITE | XANTHATE ----------------
@@ -593,6 +753,19 @@ const PAPERS = [
     reportedResult: ">90% recovery reported with BX/ADD xanthate-type collectors.",
     mechanism: "Same covalent chemisorption mechanism as cpy-xan-01.",
     divergenceNote: null
+  },
+  {
+    id: "cpy-xan-03", mineral: "chalcopyrite", collector: "xanthate", verified: false,
+    outcome: "positive",
+    title: "Effect of Oxidation on the Floatability and Surface Properties of Chalcopyrite",
+    authors: "Liu, Ziyuan et al.", year: 2025, source: "ACS Omega (via Consensus)",
+    url: "https://consensus.app/papers/details/35572d1fd885507d861b2316ace7cd56/",
+    testedPH: 4, testedPHRange: [3, 11],
+    testedDose: { value: 100, unit: "g/t", range: null, singleSource: true },
+    testedParticleSize: null,
+    reportedResult: "Optimal pH for floating chalcopyrite is around pH 4, with ideal dosage of 100 g/t butyl xanthate (a separate 125 g/t figure given for a different collector, ammonium dibutyl dithiophosphate, not xanthate). Slight surface oxidation improves floatability; excessive oxidation depresses it.",
+    mechanism: "Covalent chemisorption, consistent with cpy-xan-01/02, but this is the first paper on file with a specific dosage figure (100 g/t) for xanthate specifically on chalcopyrite \u2014 previous entries only had a pH range, no dose.",
+    divergenceNote: "This paper's stated optimum pH (4) sits at the acidic edge of the wider pH 3\u201311 tolerance range reported by cpy-xan-01 \u2014 both can be true simultaneously (wide tolerance range, with pH 4 as a specific local optimum in this paper's ore/conditions) but it's worth flagging that \"optimum\" and \"tolerant range\" are different claims being merged here."
   },
 
   // ---------------- GALENA | XANTHATE ----------------
@@ -735,15 +908,36 @@ const HYDROPHOBIC_TAIL_NOTES = {
   sulfonate: "Variable chain length — limited literature on file to characterize this term for sulfonate specifically."
 };
 
-function bondForSurface(surface, collector, pH, testedPHInfo) {
+function bondForSurface(surface, collector, pH, testedPHInfo, mechanismSwitchInfo) {
   const collectorChargeSign = collector.charge === "anionic" ? "negative" : "positive";
   const electrostaticFavorable = surface.chargeSign !== "neutral" && surface.chargeSign !== collectorChargeSign;
-  const hsabMatch = (surface.hsab === "hard" && collector.hsab === "hard") || (surface.hsab === "soft" && collector.hsab === "soft");
+  const hsabMatch = (surface.hsab === "hard" && collector.hsab === "hard")
+    || (surface.hsab === "soft" && collector.hsab === "soft")
+    // "borderline" HSAB surfaces (e.g. hematite) can coordinate with
+    // either hard or soft collectors per HSAB theory \u2014 treating
+    // borderline as matching neither (the previous unstated default)
+    // silently blocked chemisorption/chelation reasoning for every
+    // borderline mineral regardless of collector, which contradicted
+    // real evidence (hem-fa-01 reports chemisorption as the dominant
+    // mechanism for hematite+fatty_acid in alkaline pH).
+    || surface.hsab === "borderline";
   const pzcDelta = surface.pzc !== null ? Math.abs(pH - surface.pzc) : 0;
 
-  let bondMode, strength, usedTestedPH = false;
+  let bondMode, strength, usedTestedPH = false, mechanismSwitched = false;
 
-  if (collector.mechanism.includes("chelation") && hsabMatch) {
+  // Mechanism-switch override: for pairs where a paper explicitly
+  // reports the BONDING MECHANISM ITSELF changes with pH (not just
+  // strength) — currently only hematite+fatty_acid, per hem-fa-01 —
+  // force the electrostatic branch below the crossover pH even though
+  // the collector's default mechanism string says "chelation". No
+  // crossover pH is reported in the source paper, so pH 7 (neutral)
+  // is used as the most defensible default rather than an invented
+  // number — flagged via mechanismSwitched so the UI can disclose
+  // this is a coarser, paper-driven exception, not the general model.
+  const crossover = mechanismSwitchInfo && mechanismSwitchInfo.crossoverPH !== null ? mechanismSwitchInfo.crossoverPH : 7;
+  const forceElectrostaticBranch = mechanismSwitchInfo && mechanismSwitchInfo.type === "chemisorption-to-electrostatic" && pH < crossover;
+
+  if (collector.mechanism.includes("chelation") && hsabMatch && !forceElectrostaticBranch) {
     bondMode = "chemisorption (chelation)";
     if (testedPHInfo && testedPHInfo.testedPH !== undefined && testedPHInfo.testedPH !== null) {
       usedTestedPH = true;
@@ -767,7 +961,7 @@ function bondForSurface(surface, collector, pH, testedPHInfo) {
       else if (pzcDelta <= 5.5) strength = "weak-to-moderate";
       else strength = "weak";
     }
-  } else if (collector.mechanism === "covalent chemisorption" && hsabMatch) {
+  } else if (collector.mechanism === "covalent chemisorption" && hsabMatch && !forceElectrostaticBranch) {
     bondMode = "covalent chemisorption";
     if (testedPHInfo && testedPHInfo.testedPH !== undefined && testedPHInfo.testedPH !== null) {
       usedTestedPH = true;
@@ -786,12 +980,14 @@ function bondForSurface(surface, collector, pH, testedPHInfo) {
   } else if (electrostaticFavorable) {
     bondMode = "electrostatic (physisorption)";
     strength = pzcDelta > 2 ? "moderate-to-strong" : "weak-to-moderate";
+    if (forceElectrostaticBranch) mechanismSwitched = true;
   } else {
     bondMode = "unfavorable / minimal adsorption";
     strength = "weak";
+    if (forceElectrostaticBranch && !electrostaticFavorable) mechanismSwitched = true;
   }
 
-  return { bondMode, strength, electrostaticFavorable, hsabMatch, usedTestedPH, pzcDelta };
+  return { bondMode, strength, electrostaticFavorable, hsabMatch, usedTestedPH, pzcDelta, mechanismSwitched };
 }
 
 // Dose modifier: qualitative degradation if dose is far outside any
@@ -799,29 +995,78 @@ function bondForSurface(surface, collector, pH, testedPHInfo) {
 // model (which would need real isotherm data we don't have), this
 // is intentionally coarse — it flags "far from any tested dose" as
 // a reason for lower confidence, not a precise strength computation.
-function doseModifier(dose, doseRangeInfo) {
-  if (!doseRangeInfo || dose === null || dose === undefined) return { flag: null };
-  if (doseRangeInfo.mode === "single") {
-    const ratio = dose / doseRangeInfo.value;
-    if (ratio < 0.3 || ratio > 3) return { flag: "far-from-tested", note: `Far from the single reported dose (${doseRangeInfo.value} ${doseRangeInfo.unit}) — theory here is extrapolating well beyond any tested condition.` };
-    return { flag: null };
-  }
-  if (doseRangeInfo.mode === "mixed-units") {
-    return { flag: "mixed-units", note: `Papers on file report dose in different units (${doseRangeInfo.values.map(v => v.unit).join(", ")}) — shown separately rather than merged into one range.` };
-  }
-  if (dose < doseRangeInfo.min * 0.5 || dose > doseRangeInfo.max * 1.5) {
-    return { flag: "far-from-tested", note: `Outside the reported dose range (${doseRangeInfo.min}\u2013${doseRangeInfo.max} ${doseRangeInfo.unit}) across ${doseRangeInfo.sourceCount} papers.` };
-  }
-  return { flag: null };
+function strengthTierDown(strength, tiers) {
+  const order = ["weak", "weak-to-moderate", "moderate-to-strong", "strong"];
+  const idx = Math.max(0, order.indexOf(strength) - tiers);
+  return order[idx];
 }
 
-function predictTheory(mineralKey, collectorKey, pH, testedPHInfo, dose, doseRangeInfo) {
+function doseModifier(dose, doseRangeInfo) {
+  // Real fix: previously this only returned a warning FLAG that was
+  // displayed as a note but never touched the actual strength result
+  // \u2014 meaning the dose slider was cosmetically live but functionally
+  // inert. Now returns a tierPenalty (0, 1, or 2 strength tiers to
+  // subtract), following the same distance-based grading pattern
+  // already used for pH, so dose actually changes the readout.
+  if (!doseRangeInfo || dose === null || dose === undefined) return { flag: null, tierPenalty: 0 };
+  if (doseRangeInfo.mode === "single") {
+    const ratio = dose / doseRangeInfo.value;
+    if (ratio < 0.15 || ratio > 6) return { flag: "far-from-tested", tierPenalty: 2, note: `Far from the single reported dose (${doseRangeInfo.value} ${doseRangeInfo.unit}) \u2014 theory here is extrapolating well beyond any tested condition.` };
+    if (ratio < 0.4 || ratio > 2.5) return { flag: "off-tested", tierPenalty: 1, note: `Some distance from the single reported dose (${doseRangeInfo.value} ${doseRangeInfo.unit}).` };
+    return { flag: null, tierPenalty: 0 };
+  }
+  if (doseRangeInfo.mode === "mixed-units") {
+    return { flag: "mixed-units", tierPenalty: 0, note: `Papers on file report dose in different units (${doseRangeInfo.values.map(v => v.unit).join(", ")}) \u2014 shown separately rather than merged into one range, and not usable for dose-based strength grading yet.` };
+  }
+  if (dose < doseRangeInfo.min * 0.3 || dose > doseRangeInfo.max * 2) {
+    return { flag: "far-from-tested", tierPenalty: 2, note: `Well outside the reported dose range (${doseRangeInfo.min}\u2013${doseRangeInfo.max} ${doseRangeInfo.unit}) across ${doseRangeInfo.sourceCount} papers.` };
+  }
+  if (dose < doseRangeInfo.min * 0.6 || dose > doseRangeInfo.max * 1.4) {
+    return { flag: "off-tested", tierPenalty: 1, note: `Outside the reported dose range (${doseRangeInfo.min}\u2013${doseRangeInfo.max} ${doseRangeInfo.unit}) across ${doseRangeInfo.sourceCount} papers.` };
+  }
+  return { flag: null, tierPenalty: 0 };
+}
+
+// Particle-size modifier: only produces a real penalty where a paper
+// on file actually reports a favorable/adverse size fraction for
+// this pair (currently: diaspore\u2014see dia-am-02). Everywhere else,
+// returns no penalty and says so honestly rather than fabricating a
+// generic particle-size curve with no source.
+function particleSizeModifier(particleSize, mineralKey, collectorKey) {
+  // Corrected scope: the favorable/adverse size-fraction data (Zhang et
+  // al. 2017, dia-am-02) is for DIRECT diaspore flotation using sodium
+  // oleate (fatty_acid), not amine \u2014 amine's role in that paper is
+  // collecting kaolinite in a separate reverse-flotation system. This
+  // modifier previously applied to diaspore regardless of collector,
+  // which was wrong after that mismapping was corrected.
+  if (mineralKey === "diaspore" && collectorKey === "fatty_acid") {
+    if (particleSize >= 20 && particleSize <= 54) {
+      return { flag: null, tierPenalty: 0, note: "Within the favorable particle-size range reported for diaspore with sodium oleate (20\u201354 \u00b5m, Zhang et al. 2017)." };
+    }
+    if (particleSize < 20) {
+      return { flag: "adverse-size", tierPenalty: 1, note: `At ${particleSize.toFixed(0)} \u00b5m, below the favorable range \u2014 Zhang et al. 2017 reports \u221210\u00b5m and \u221220+10\u00b5m fractions as adverse for diaspore flotation.` };
+    }
+    return { flag: null, tierPenalty: 0, note: "Above the specific favorable range tested, but outside the adverse fractions reported \u2014 no strong penalty applied, limited data at this size." };
+  }
+  return { flag: null, tierPenalty: 0, note: "No particle-size-specific paper on file for this pair \u2014 slider has no effect on the result here." };
+}
+
+function predictTheory(mineralKey, collectorKey, pH, testedPHInfo, dose, doseRangeInfo, particleSize) {
   const mineral = MINERALS[mineralKey];
   const collector = COLLECTORS[collectorKey];
   const surfaces = surfaceStateFor(mineral, pH);
-  const surfaceResults = surfaces.map(s => ({ ...s, ...bondForSurface(s, collector, pH, testedPHInfo) }));
-  const dominant = surfaceResults.reduce((a, b) => (b.fraction > a.fraction ? b : a));
+  const pairPapers = papersFor(mineralKey, collectorKey);
+  const switchPaper = pairPapers.find(p => p.mechanismSwitch);
+  const mechanismSwitchInfo = switchPaper ? switchPaper.mechanismSwitch : null;
+  const surfaceResults = surfaces.map(s => ({ ...s, ...bondForSurface(s, collector, pH, testedPHInfo, mechanismSwitchInfo) }));
+  let dominant = surfaceResults.reduce((a, b) => (b.fraction > a.fraction ? b : a));
+
   const doseInfo = doseModifier(dose, doseRangeInfo);
+  const sizeInfo = particleSizeModifier(particleSize, mineralKey, collectorKey);
+  const totalTierPenalty = doseInfo.tierPenalty + sizeInfo.tierPenalty;
+  if (totalTierPenalty > 0) {
+    dominant = { ...dominant, strength: strengthTierDown(dominant.strength, totalTierPenalty), penalized: true };
+  }
 
   return {
     surfaces: surfaceResults,
@@ -829,6 +1074,8 @@ function predictTheory(mineralKey, collectorKey, pH, testedPHInfo, dose, doseRan
     hydrophobicNote: HYDROPHOBIC_TAIL_NOTES[collectorKey] || null,
     doseFlag: doseInfo.flag,
     doseNote: doseInfo.note || null,
+    sizeFlag: sizeInfo.flag,
+    sizeNote: sizeInfo.note || null,
     // Explicit disclosure string surfaced directly in the UI, not
     // buried — this panel is reasoning, not validated prediction.
     scopeNote: "Mechanistic prediction from surface-charge (PZC), HSAB matching, and hydrophobic-tail reasoning (extended DLVO). Not validated against measured recovery data \u2014 see the Literature panel for that."
@@ -989,6 +1236,7 @@ function render() {
   const particleSize = parseFloat(els.particleSize.value);
 
   els.phVal.textContent = pH.toFixed(1);
+  els.collectorDoseVal.textContent = collectorDose.toFixed(0);
   els.depressantDoseVal.textContent = depressantDose.toFixed(1);
   els.particleSizeVal.textContent = particleSize.toFixed(0);
 
@@ -1046,7 +1294,7 @@ function render() {
       sourceCount: papersWithPH.length
     };
   }
-  const theory = predictTheory(mineralKey, collectorKey, pH, testedPHInfo, collectorDose, doseRange);
+  const theory = predictTheory(mineralKey, collectorKey, pH, testedPHInfo, collectorDose, doseRange, particleSize);
   const depResult = depressantStrength(depressantKey, mineralKey, collector.hsab === 'hard' ? 8 : 8, pH, depressantDose);
 
   els.theoryScopeNote.textContent = theory.scopeNote;
@@ -1055,7 +1303,7 @@ function render() {
   // ---------------- evidence panel ----------------
   els.evidenceCountTag.textContent = `${papers.length} paper${papers.length === 1 ? '' : 's'}`;
   renderEvidenceWeight(weight);
-  renderEvidenceBody(papers, mineralKey, collectorKey);
+  renderEvidenceBody(papers, mineralKey, collectorKey, pH);
   renderConflictBanner(theory, papers, mineralKey, collectorKey);
 
   // ---------------- 3D scene ----------------
@@ -1071,8 +1319,14 @@ function renderTheoryBody(theory, mineral, collector, depressantKey, depResult, 
   let html = '';
   html += `<div class="strength-readout">
     <span class="strength-value ${dom.strength}">${dom.strength.replace(/-/g,' ')}</span>
-    <span class="strength-label">${dom.bondMode}${dom.usedTestedPH ? ' \u00b7 graded vs. tested pH' : ' \u00b7 PZC-distance fallback'}</span>
+    <span class="strength-label">${dom.bondMode}${dom.usedTestedPH ? ' \u00b7 graded vs. tested pH' : ' \u00b7 PZC-distance fallback'}${dom.penalized ? ' \u00b7 reduced by dose/size' : ''}</span>
   </div>`;
+
+  if (dom.mechanismSwitched) {
+    html += `<div class="dose-flag" style="border-color:var(--evidence-bright);background:rgba(62,124,124,0.1);">
+      <strong>Mechanism override active:</strong> a paper on file for this pair reports the bonding mechanism itself changes with pH (not just strength) \u2014 this collector's usual mechanism has been switched to electrostatic reasoning below the reported crossover, since the underlying paper doesn't state a precise crossover pH, pH 7 is used as a coarse default rather than an invented number. See the Literature panel for the source.
+    </div>`;
+  }
 
   // PZC / pH diagram
   html += `<div class="diagram-wrap">`;
@@ -1105,6 +1359,9 @@ function renderTheoryBody(theory, mineral, collector, depressantKey, depResult, 
   if (theory.doseFlag) {
     html += `<div class="dose-flag">${theory.doseNote}</div>`;
   }
+  if (theory.sizeFlag) {
+    html += `<div class="dose-flag">${theory.sizeNote}</div>`;
+  }
 
   els.theoryBody.innerHTML = html;
 }
@@ -1113,13 +1370,39 @@ function renderEvidenceWeight(weight) {
   els.evidenceWeightWrap.innerHTML = `<div class="evidence-weight ${weight.level}">${weight.label}</div>`;
 }
 
-function renderEvidenceBody(papers, mineralKey, collectorKey) {
+function renderEvidenceBody(papers, mineralKey, collectorKey, currentPH) {
   if (papers.length === 0) {
     els.evidenceBody.innerHTML = `<div class="empty-state">No papers on file for ${MINERALS[mineralKey].name} + ${COLLECTORS[collectorKey].name}. The Theory panel is reasoning from general surface chemistry only \u2014 nothing here has been checked against a real study yet.</div>`;
     return;
   }
-  els.evidenceBody.innerHTML = papers.map(p => `
-    <div class="paper-card outcome-${p.outcome}">
+  els.evidenceBody.innerHTML = papers.map(p => {
+    // Real bug fix: previously this card showed the paper's outcome
+    // (e.g. "positive") with no regard for whether the CURRENT pH
+    // slider position has anything to do with what the paper actually
+    // tested. At pH 13, a paper tested at pH 6.0 was still showing a
+    // plain "positive" tag \u2014 reading as if the paper endorsed pH 13,
+    // when it says nothing about that condition at all. Now: compute
+    // how far the current pH is from this paper's tested range (or
+    // single point), and visually/textually flag it when we're
+    // outside what the paper actually covers.
+    let phRelevance = null;
+    if (p.testedPH !== null && p.testedPH !== undefined) {
+      const [lo, hi] = p.testedPHRange || [p.testedPH, p.testedPH];
+      if (currentPH >= lo && currentPH <= hi) {
+        phRelevance = { level: 'in-range', label: `Current pH ${currentPH.toFixed(1)} is within this paper's tested range (${lo}\u2013${hi}).` };
+      } else {
+        const distFromEdge = currentPH < lo ? lo - currentPH : currentPH - hi;
+        phRelevance = {
+          level: distFromEdge > 3 ? 'far-outside' : 'outside',
+          label: `Current pH ${currentPH.toFixed(1)} is OUTSIDE this paper's tested range (${lo}\u2013${hi}) \u2014 this paper's "${p.outcome}" finding does not apply at the current pH setting.`
+        };
+      }
+    }
+
+    const relevanceBanner = phRelevance ? `<div class="ph-relevance ${phRelevance.level}">${phRelevance.level === 'in-range' ? '\u2713' : '\u26a0'} ${phRelevance.label}</div>` : '';
+
+    return `
+    <div class="paper-card outcome-${p.outcome} ${phRelevance && phRelevance.level !== 'in-range' ? 'ph-mismatch' : ''}">
       <span class="paper-outcome-tag ${p.outcome}">${p.outcome.replace(/-/g,' ')}</span>
       ${!p.verified ? '<span class="unverified-flag">found via search \u2014 not independently read in full</span>' : ''}
       <div class="paper-title">${p.title}</div>
@@ -1129,11 +1412,13 @@ function renderEvidenceBody(papers, mineralKey, collectorKey) {
         ${p.testedDose && p.testedDose.value !== null ? `<span class="cond-chip">${p.testedDose.value} ${p.testedDose.unit}${p.testedDose.singleSource ? ' (single source)' : ''}</span>` : ''}
         ${p.testedParticleSize ? `<span class="cond-chip">${p.testedParticleSize.value} ${p.testedParticleSize.unit}</span>` : ''}
       </div>
+      ${relevanceBanner}
       <div class="paper-result">${p.reportedResult}</div>
       <div class="paper-mechanism">${p.mechanism}</div>
       ${p.divergenceNote ? `<div class="paper-divergence">\u25b8 ${p.divergenceNote}</div>` : ''}
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderConflictBanner(theory, papers, mineralKey, collectorKey) {
@@ -1143,9 +1428,20 @@ function renderConflictBanner(theory, papers, mineralKey, collectorKey) {
   const negativeOrAvoidance = papers.filter(p => p.outcome === 'negative' || p.outcome === 'selective-avoidance');
   const outcomes = new Set(papers.map(p => p.outcome));
   const papersConflictInternally = outcomes.size > 1;
+
+  // Same fix as evidenceWeightFor: papers can share an outcome label
+  // but disagree on the actual tested pH \u2014 that's a real conflict too,
+  // just not one the outcome-only check above catches.
+  const papersWithPH = papers.filter(p => p.testedPH !== null && p.testedPH !== undefined);
+  let papersConflictOnPH = false;
+  if (papersWithPH.length >= 2) {
+    const phValues = papersWithPH.map(p => p.testedPH);
+    papersConflictOnPH = (Math.max(...phValues) - Math.min(...phValues)) > 3;
+  }
+
   const theoryVsEvidenceConflict = theoryPredictsBonding && negativeOrAvoidance.length > 0;
 
-  if (!papersConflictInternally && !theoryVsEvidenceConflict) {
+  if (!papersConflictInternally && !papersConflictOnPH && !theoryVsEvidenceConflict) {
     els.conflictBannerWrap.innerHTML = '';
     return;
   }
@@ -1156,10 +1452,22 @@ function renderConflictBanner(theory, papers, mineralKey, collectorKey) {
   let reasons = [];
   if (theoryVsEvidenceConflict) reasons.push('Theory predicts favorable bonding, but at least one paper on file reports a negative or selective-avoidance outcome for this exact pair.');
   if (papersConflictInternally) reasons.push('Papers on file report different outcomes for this pair \u2014 see individual divergence notes below.');
+  if (papersConflictOnPH && !papersConflictInternally) reasons.push('Papers on file report the SAME outcome but disagree on the specific tested pH \u2014 see individual divergence notes below.');
+
+  // Title reflects what's actually in conflict \u2014 papers-vs-papers is a
+  // different situation than papers-vs-theory, and conflating them
+  // under one "disagree with theory" title was misleading when theory
+  // was never the source of the disagreement (e.g. all three gibbsite+
+  // amine papers agree with each other's general direction and with
+  // theory's electrostatic reasoning \u2014 they only disagree on WHICH pH
+  // is optimal).
+  const bannerTitle = theoryVsEvidenceConflict
+    ? '\u26a0 Papers disagree with theoretical prediction here'
+    : '\u26a0 Papers disagree with each other here';
 
   els.conflictBannerWrap.innerHTML = `
     <div class="conflict-banner">
-      <div class="cb-title">\u26a0 Papers disagree with theoretical prediction here</div>
+      <div class="cb-title">${bannerTitle}</div>
       ${reasons.map(r => `<div>${r}</div>`).join('')}
       <div class="cb-hint">What do you think explains the difference? (session-only \u2014 not saved between visits, no backend storage exists yet)</div>
       <textarea id="commentInput" placeholder="e.g. site density, particle aggregation, ore source variability..."></textarea>
@@ -1222,6 +1530,24 @@ function project(x, y, z, cx, cy, scale) {
 
 const HSAB_COLOR = { hard: '#B8863B', soft: '#6FA3C9', borderline: '#9A9488' };
 
+function drawLabel(text, x, y, opts = {}) {
+  const { size = 11, color = '#EDE7DD', align = 'center', weight = '500', bg = true } = opts;
+  ctx.font = `${weight} ${size}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  if (bg) {
+    const metrics = ctx.measureText(text);
+    const padX = 6, padY = 4;
+    let bx = x;
+    if (align === 'center') bx = x - metrics.width / 2;
+    else if (align === 'right') bx = x - metrics.width;
+    ctx.fillStyle = 'rgba(28,27,25,0.82)';
+    ctx.fillRect(bx - padX, y - size / 2 - padY, metrics.width + padX * 2, size + padY * 2);
+  }
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
 function drawScene() {
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
@@ -1230,7 +1556,7 @@ function drawScene() {
 
   if (!sceneState) { requestAnimationFrame(drawScene); return; }
   const { mineral, collector, theory, depResult } = sceneState;
-  const cx = w / 2, cy = h / 2 + 20, scale = Math.min(w, h) * 0.34;
+  const cx = w / 2, cy = h / 2 + 10, scale = Math.min(w, h) * 0.32;
 
   const dom = theory.dominant;
   const strengthColor = { strong: '#7A9B5C', 'moderate-to-strong': '#D9A24E', 'weak-to-moderate': '#B85C3B', weak: '#C24E4E' }[dom.strength];
@@ -1246,28 +1572,47 @@ function drawScene() {
     for (let j = 0; j < gridN; j++) {
       const x = (i - (gridN - 1) / 2) * spacing;
       const z = (j - (gridN - 1) / 2) * spacing;
-      pts.push({ x, y: 0, z, i, j });
+      // The CENTER site (i=2 or 3, j=2 or 3) is the one the collector
+      // molecule actually bonds to \u2014 marked distinctly so it's clear
+      // which specific site is "the" bonding site, not just a lattice
+      // of identical dots with no indication of where attachment happens.
+      const isCenterSite = (i === 2 || i === 3) && (j === 2 || j === 3) && i === 2 && j === 2;
+      pts.push({ x, y: 0, z, i, j, isCenterSite });
     }
   }
   pts.sort((a, b) => project(a.x, a.y, a.z, cx, cy, scale).depth - project(b.x, b.y, b.z, cx, cy, scale).depth);
 
+  let centerSiteProj = null;
   pts.forEach(p => {
     const proj = project(p.x, p.y, p.z, cx, cy, scale);
     const isEdgeBand = isAnisotropic && (p.i === 0 || p.i === gridN - 1 || p.j === 0 || p.j === gridN - 1);
     const col = isEdgeBand ? '#D9A24E' : siteColor;
-    const r = 5 * proj.persp;
+    const r = (p.isCenterSite ? 8 : 5) * proj.persp;
     ctx.beginPath();
     ctx.arc(proj.x, proj.y, r, 0, Math.PI * 2);
-    ctx.fillStyle = col;
-    ctx.globalAlpha = 0.55 + 0.25 * proj.persp;
+    ctx.fillStyle = p.isCenterSite ? '#EDE7DD' : col;
+    ctx.globalAlpha = p.isCenterSite ? 1 : (0.5 + 0.2 * proj.persp);
     ctx.fill();
+    if (p.isCenterSite) {
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      centerSiteProj = proj;
+    }
     ctx.globalAlpha = 1;
   });
+
+  // ---- surface / mineral label, anchored near the lattice ----
+  const surfaceLabelProj = project(0, 0.12, 0.9, cx, cy, scale);
+  const dominantSurfaceLabel = isAnisotropic ? `${mineral.name} \u2014 ${theory.dominant.label} face` : mineral.name;
+  drawLabel(dominantSurfaceLabel, surfaceLabelProj.x, surfaceLabelProj.y, { size: 12, weight: '600', color: '#EDE7DD' });
+  const siteLabelProj = project(0, 0.12, 1.15, cx, cy, scale);
+  drawLabel(`surface site: ${mineral.surfaceSite}`, siteLabelProj.x, siteLabelProj.y, { size: 10, color: '#C4BEB2' });
 
   // ---- pulsing charge field ring ----
   const t = performance.now() / 1000;
   const pulse = (Math.sin(t * 1.6) + 1) / 2;
-  const chargeSign = dom.electrostaticFavorable !== undefined ? (theory.surfaces[0].chargeSign) : 'neutral';
+  const chargeSign = theory.dominant.chargeSign || 'neutral';
   const ringColor = chargeSign === 'negative' ? '#6FA3C9' : chargeSign === 'positive' ? '#B85C3B' : '#9A9488';
   for (let ring = 0; ring < 2; ring++) {
     const ringR = (0.9 + ring * 0.5 + pulse * 0.3) * scale;
@@ -1279,11 +1624,13 @@ function drawScene() {
     ctx.stroke();
     ctx.globalAlpha = 1;
   }
+  const chargeLabelProj = project(1.5, 0, 0, cx, cy, scale);
+  drawLabel(`surface: ${chargeSign}`, chargeLabelProj.x, chargeLabelProj.y, { size: 10, color: ringColor, align: 'left' });
 
-  // ---- collector molecule (tail + head group) ----
-  const bobHeight = bonded ? 0.55 + Math.sin(t * 1.2) * 0.03 : 0.55 + Math.sin(t*1.2)*0.03 + (suppressed ? 0.35 : 0);
+  // ---- collector molecule (tail + head group), positioned directly above the marked center site ----
+  const bobHeight = bonded ? 0.5 + Math.sin(t * 1.2) * 0.03 : 0.5 + Math.sin(t*1.2)*0.03 + (suppressed ? 0.3 : 0);
   const headProj = project(0, -bobHeight, 0, cx, cy, scale);
-  const tailTopProj = project(0.15, -bobHeight - 0.9, -0.1, cx, cy, scale);
+  const tailTopProj = project(0.15, -bobHeight - 0.65, -0.1, cx, cy, scale);
 
   // tail (gray line)
   ctx.beginPath();
@@ -1292,6 +1639,8 @@ function drawScene() {
   ctx.strokeStyle = '#9A9488';
   ctx.lineWidth = 3 * headProj.persp;
   ctx.stroke();
+  const tailLabelProj = project(0.15, -bobHeight - 0.85, -0.1, cx, cy, scale);
+  drawLabel('hydrophobic tail', tailLabelProj.x, tailLabelProj.y, { size: 9.5, color: '#9A9488' });
 
   // head group
   const headColor = collector.charge === 'anionic' ? '#B8863B' : '#6FA3C9';
@@ -1302,18 +1651,39 @@ function drawScene() {
   ctx.strokeStyle = '#EDE7DD';
   ctx.lineWidth = 1;
   ctx.stroke();
+  const headLabelProj = project(0.35, -bobHeight, 0, cx, cy, scale);
+  drawLabel(`${collector.headGroup} (${collector.charge})`, headLabelProj.x, headLabelProj.y, { size: 10, color: headColor, align: 'left' });
+
+  // collector name, above everything
+  const collectorNameProj = project(0.15, -bobHeight - 1.05, -0.1, cx, cy, scale);
+  drawLabel(collector.name, collectorNameProj.x, collectorNameProj.y, { size: 12, weight: '600', color: '#EDE7DD' });
 
   // bond line (surface site to head group) — color-coded by strength, dashed if suppressed
-  if (bonded) {
-    const siteProj = project(0, 0, 0, cx, cy, scale);
+  if (bonded && centerSiteProj) {
     ctx.beginPath();
-    ctx.moveTo(siteProj.x, siteProj.y);
+    ctx.moveTo(centerSiteProj.x, centerSiteProj.y);
     ctx.lineTo(headProj.x, headProj.y);
     ctx.strokeStyle = suppressed ? '#6FA3C9' : strengthColor;
     ctx.lineWidth = suppressed ? 2 : (dom.strength === 'strong' ? 4 : 2.5);
     if (suppressed) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
     ctx.stroke();
     ctx.setLineDash([]);
+
+    // bond-type label at the midpoint of the bond line — names what
+    // kind of bond this is (chelation / covalent / electrostatic),
+    // not just showing a colored line with no explanation.
+    const midX = (centerSiteProj.x + headProj.x) / 2, midY = (centerSiteProj.y + headProj.y) / 2;
+    const bondTypeLabel = suppressed ? 'bond suppressed by depressant' : dom.bondMode;
+    drawLabel(bondTypeLabel, midX + 14, midY, { size: 10, weight: '600', color: suppressed ? '#6FA3C9' : strengthColor, align: 'left' });
+  } else if (!bonded) {
+    const noBondProj = project(0, -0.28, 0, cx, cy, scale);
+    // Don't attribute "no bond" to the depressant unless there was
+    // actually something for it to suppress \u2014 otherwise a pairing
+    // that's weak from surface chemistry alone (e.g. diaspore+amine,
+    // repelled by surface charge) misleadingly implies the depressant
+    // is the reason, when it isn't the primary cause here.
+    const label = suppressed ? 'no bond (depressant + weak chemistry)' : 'no significant bond (surface chemistry)';
+    drawLabel(label, noBondProj.x, noBondProj.y, { size: 10, weight: '600', color: '#C24E4E', align: 'left' });
   }
 
   requestAnimationFrame(() => {
@@ -1324,10 +1694,16 @@ function drawScene() {
 
 function updateScene(state) {
   sceneState = state;
-  const suppressedNote = state.depResult && state.depResult.suppressed ? '<div class="li"><span class="sw" style="background:#6FA3C9"></span>Bond suppressed by depressant (dashed)</div>' : '';
+  const dom = state.theory.dominant;
+  const bonded = dom.strength !== 'weak';
+  const suppressed = state.depResult && state.depResult.suppressed && bonded;
+  const suppressedNote = suppressed ? '<div class="li"><span class="sw" style="background:#6FA3C9"></span>Bond suppressed by depressant (dashed line)</div>' : '';
+  const siteHsabNote = `${state.mineral.hsab} surface site \u00d7 ${state.collector.hsab} collector`;
   els.sceneLegend.innerHTML = `
-    <div class="li"><span class="sw" style="background:${{strong:'#7A9B5C','moderate-to-strong':'#D9A24E','weak-to-moderate':'#B85C3B',weak:'#C24E4E'}[state.theory.dominant.strength]}"></span>Bond: ${state.theory.dominant.strength.replace(/-/g,' ')}</div>
-    <div class="li"><span class="sw" style="background:${state.collector.charge==='anionic'?'#B8863B':'#6FA3C9'}"></span>${state.collector.name} (${state.collector.charge})</div>
+    <div class="li"><span class="sw" style="background:${{strong:'#7A9B5C','moderate-to-strong':'#D9A24E','weak-to-moderate':'#B85C3B',weak:'#C24E4E'}[dom.strength]}"></span>Bond strength: ${dom.strength.replace(/-/g,' ')}</div>
+    <div class="li"><span class="sw" style="background:${state.collector.charge==='anionic'?'#B8863B':'#6FA3C9'}"></span>${state.collector.name} \u2014 ${state.collector.headGroup}</div>
+    <div class="li">HSAB: ${siteHsabNote}</div>
+    <div class="li">White-ringed dot = the specific site being bonded (rest of lattice shown for scale/context only)</div>
     ${suppressedNote}
   `;
 }
